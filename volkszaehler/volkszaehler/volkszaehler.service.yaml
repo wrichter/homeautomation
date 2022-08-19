@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: volkszaehler
+spec:
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: volkszaehler
+  sessionAffinity: None
+  type: ClusterIP

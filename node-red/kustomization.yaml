@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- node-red.deployment.yaml
+- node-red.pvc.yaml
+- node-red.service.yaml
+- node-red.route.yaml
+
+images:
+- name: node-red
+  newName: localhost/node-red
+  newTag: latest
+

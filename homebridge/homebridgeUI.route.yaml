@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: homebridge
+spec:
+  host: homebridge.local
+  port:
+    targetPort: 8581
+  to:
+    kind: Service
+    name: homebridge-ui
+    weight: 100
+  wildcardPolicy: None

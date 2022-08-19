@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: homeassistant
+spec:
+  host: homeassistant.local
+  port:
+    targetPort: ui
+  to:
+    kind: Service
+    name: homeassistant
+    weight: 100
+  wildcardPolicy: None

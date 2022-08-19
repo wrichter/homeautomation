@@ -1,0 +1,9 @@
+[API]
+lat=48.78682
+lon=9.18745
+apikey=<<your openweathermap api key>>
+middlewareurl=http://volkszaehler:8080
+pushserverurl=http://pushserver:5582
+
+[channels]
+temp=<<uuid of the channel created in the volkszaehler UI>>

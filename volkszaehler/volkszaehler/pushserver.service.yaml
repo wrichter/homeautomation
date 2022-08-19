@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pushserver
+spec:
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: webclient
+    port: 8082
+    protocol: TCP
+    targetPort: 8082
+  - name: vzlogger
+    port: 5582
+    protocol: TCP
+    targetPort: 5582
+  selector:
+    app: pushserver
+  sessionAffinity: None
+  type: ClusterIP

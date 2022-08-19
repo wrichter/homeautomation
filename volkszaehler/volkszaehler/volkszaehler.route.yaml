@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: volkszaehler
+spec:
+  host: volkszaehler.local
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: volkszaehler
+    weight: 100
+  wildcardPolicy: None

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: database
+data:
+  # property-like keys; each key maps to a simple value
+  MYSQL_DATABASE: volkszaehler
+  MYSQL_USER: vz
+  MYSQL_PASSWORD: demo
+  MYSQL_ROOT_PASSWORD: admin_demo

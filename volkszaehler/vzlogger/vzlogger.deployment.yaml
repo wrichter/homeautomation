@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  name: vzlogger
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: vzlogger
+  strategy:
+    # rollingUpdate:
+    #   maxSurge: 25%
+    #   maxUnavailable: 25%
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: vzlogger
+    spec:
+      containers:
+      - image: vzlogger
+        imagePullPolicy: Always
+        name: vzlogger
+        command: ["vzlogger", "--foreground"]
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/vzlogger.conf
+          subPath: vzlogger.conf
+        - name: host-dev
+          mountPath: /dev
+        - name: host-sys
+          mountPath: /sys
+        securityContext:
+          privileged: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: config-volume
+        configMap:
+          # Provide the name of the ConfigMap containing the files you want
+          # to add to the container
+          name: vzlogger
+      - name: host-dev
+        hostPath:
+          path: /dev
+          type: Directory
+      - name: host-sys
+        hostPath:
+          path: /sys
+          type: Directory

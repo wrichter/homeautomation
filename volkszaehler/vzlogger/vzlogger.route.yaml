@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: vzlogger
+spec:
+  host: vzlogger.local
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: vzlogger
+    weight: 100
+  wildcardPolicy: None

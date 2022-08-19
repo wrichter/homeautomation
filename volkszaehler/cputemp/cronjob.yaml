@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cputemp
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      metadata:
+          labels:       
+            app: cputemp
+      template:
+        metadata:
+          labels:       
+            app: cputemp   
+        spec:
+          containers:
+          - name: cputemp
+            image: cputemp
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - name: config-volume
+              mountPath: /opt/app-root/src/cputemp.ini
+              subPath: cputemp.ini
+            - name: cputemp
+              mountPath: /sys/class/thermal/thermal_zone0/subsystem/thermal_zone0/temp
+          restartPolicy: OnFailure
+          volumes:
+          - name: config-volume
+            configMap:
+              # Provide the name of the ConfigMap containing the files you want
+              # to add to the container
+              name: cputemp
+          - name: cputemp
+            hostPath:
+              path: /sys/class/thermal/thermal_zone0/subsystem/thermal_zone0/temp
+              type: File

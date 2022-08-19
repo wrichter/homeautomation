@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: pushserver
+spec:
+  host: volkszaehler.local
+  path: /ws
+  port:
+    targetPort: 8082
+  to:
+    kind: Service
+    name: pushserver
+    weight: 100
+  wildcardPolicy: None

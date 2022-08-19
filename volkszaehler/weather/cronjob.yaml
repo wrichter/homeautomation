@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: weather
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      metadata:
+          labels:       
+            app: weather
+      template:
+        metadata:
+          labels:       
+            app: weather   
+        spec:
+          containers:
+          - name: weather
+            image: weather
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - name: config-volume
+              mountPath: /opt/app-root/src/weather.ini
+              subPath: weather.ini
+          restartPolicy: OnFailure
+          volumes:
+          - name: config-volume
+            configMap:
+              # Provide the name of the ConfigMap containing the files you want
+              # to add to the container
+              name: weather

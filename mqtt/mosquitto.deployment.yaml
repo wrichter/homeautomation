@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mosquitto
+spec:
+  selector:
+    matchLabels:
+      app: mosquitto
+  template:
+    metadata:
+      labels:
+        app: mosquitto
+        type: primary
+    spec:
+      containers:
+        - image: mosquitto
+          name: mosquitto
+          ports:
+            - containerPort: 1883
+            - containerPort: 9001
+          command:
+            - mosquitto
+          args:
+            - -c 
+            - /mosquitto-no-auth.conf
+      securityContext:
+        runAsUser: 1883
+        runAsGroup: 1883
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values: [mosquitto]
+            topologyKey: kubernetes.io/hostname
