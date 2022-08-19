@@ -1,4 +1,4 @@
-# MicroShift installation on Fedora IOT / RasPi 4
+# Home Automation using Microshift on Fedora IOT / RasPi 4
 
 Based on Fedora IoT / Fedora 36 and containerized MicroShift based on OpenShift 4.8. 
 Given that MicroShift is undergoing rapid development, the notes are already outdated at the time of publishing.
@@ -97,7 +97,7 @@ Router ..> HTTP_Zigbee2MQTT : http://zigbee2mqtt.local
 ```
 -->
 
-![](componentmodel.svg)
+![Component Model](componentmodel.png?raw=true "Component Model")
 
 
 
