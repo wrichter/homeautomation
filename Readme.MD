@@ -4,8 +4,8 @@ Based on Fedora IoT / Fedora 36 and containerized MicroShift based on OpenShift 
 Given that MicroShift is undergoing rapid development, the notes are already outdated at the time of publishing.
 
 
-<div hidden>
-```
+<!--
+```plantuml
 @startuml componentmodel.svg
 
 package mqtt {
@@ -95,7 +95,7 @@ Router ..> HTTP_Zigbee2MQTT : http://zigbee2mqtt.local
 
 @enduml
 ```
-</div>
+-->
 
 ![](componentmodel.svg)
 
