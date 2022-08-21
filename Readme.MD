@@ -29,27 +29,26 @@ node rpi as "Raspberry Pi4 8GB" {
         zigbee2mqtt_comp -down-> MQTT
 
         package ns_homebridge as "homebridge" {
-            interface HTTP_Homebridge as "HTTP"
-            component Homebridge 
-            HTTP_Homebridge - Homebridge
+            interface HTTP_homebridge as "HTTP"
+            component homebridge_comp as "Homebridge" 
+            HTTP_homebridge - homebridge_comp
             database Homebridge_PVC as "Homebridge" <<PVC>> 
-            Homebridge -- Homebridge_PVC
+            homebridge_comp -- Homebridge_PVC
         }
-        Homebridge -down-> MQTT
+        homebridge_comp -down-> MQTT
 
 
         package ns_homeassistant as "homeassistant" {
             interface HTTP_Homeassistant as "HTTP"
-            component homeassistant_comp
+            component homeassistant_comp as "Home Assistant"
             HTTP_Homeassistant - homeassistant_comp
             database Homeassistant_PVC as "Homeassistant" <<PVC>>
             homeassistant_comp -- Homeassistant_PVC
         }
         homeassistant_comp -down-> MQTT 
 
-
         package ns_volkszaehler as "volkszaehler" {
-            component weather_comp as "Weather"
+            'component weather_comp as "Weather"
 
             component vzlogger_comp as "VZLogger"
             interface HTTP_VZLogger as "HTTP"
@@ -61,7 +60,7 @@ node rpi as "Raspberry Pi4 8GB" {
 
             interface HTTP_Pushserver as "HTTP"
             component Pushserver_comp as "Push Server"
-            HTTP_Pushserver - Pushserver_comp 
+            HTTP_Pushserver - Pushserver_comp
 
             interface SQL as "SQL"
             component Volkszaehler_db as "Volkszaehler DB" <<MySQL>>
@@ -69,21 +68,35 @@ node rpi as "Raspberry Pi4 8GB" {
             database Database_PVC as "Database" <<PVC>> 
             Volkszaehler_db -- Database_PVC
 
-            weather_comp -down-> HTTP_Volkszaehler
+            'weather_comp -down-> HTTP_Volkszaehler
             vzlogger_comp -down-> HTTP_Volkszaehler 
             vzlogger_comp -down-> HTTP_Pushserver 
             Volkszaehler_comp -down-> SQL
 
         }
         vzlogger_comp -down-> MQTT 
+
+        package ns_nodered as "node-red" {
+            interface HTTP_nodered as "HTTP"
+            component nodered_comp as "Node Red"
+            HTTP_nodered - nodered_comp
+            database nodered_PVC as "node-red" <<PVC>>
+            nodered_comp -- nodered_PVC
+        }
+        MQTT <-down- nodered_comp
+        HTTP_Homeassistant <-down- nodered_comp
+        HTTP_Pushserver <-down- nodered_comp
+        HTTP_Volkszaehler <-down- nodered_comp
     }
     Router - microshift 
     Router ..> HTTP_Volkszaehler : http://volkszaehler.local
     Router ..> HTTP_Pushserver : http://volkszaehler.local/ws
     Router ..> HTTP_Homeassistant : http://homeassistant.local
-    Router ..> HTTP_Homebridge : http://homebridge.local
+    Router ..> HTTP_homebridge : http://homebridge.local
     Router ..> HTTP_Zigbee2MQTT : http://zigbee2mqtt.local
     Router ..> HTTP_VZLogger : http://vzlogger.local
+    Router ..> HTTP_nodered : http://node-red.local
+
 
     component meterserialinterface_comp as "USB IR RW-Head" <<USB Device>>
     meterserialinterface_comp -- vzlogger_comp  
@@ -96,6 +109,14 @@ node rpi as "Raspberry Pi4 8GB" {
 
     component zigbee_dongle as "Zigbee Dongle" <<USB Device>>
     zigbee_dongle -- zigbee2mqtt_comp
+
+    rectangle ha_integration_description [
+        //integration of many//
+        //smart home devices and services//
+        //with Apple HomeKit//
+    ]
+    ha_integration_description -- homeassistant_comp
+    ha_integration_description -- homebridge_comp
 }
 
 cloud home_network as "Home LAN"
@@ -107,8 +128,8 @@ zigbee_network -- zigbee_dongle
 collections smart_meters as "Smart Electricity Meters"
 smart_meters -- meterserialinterface_comp 
 
-agent weather_api as "Weather API"
-weather_api -- weather_comp 
+'agent weather_api as "Weather API"
+'weather_api -- weather_comp 
 
 collections onewire_sensors as "One Wire Temperature Sensors"
 onewire_sensors -- onewiresensors_comp
@@ -116,8 +137,11 @@ onewire_sensors -- onewiresensors_comp
 agent gas_meter as "Gas Meter Impulse Counter"
 gas_meter -- impulsecounter_comp 
 
-collections ha_integrations as "Home Assistant Integrations"
-ha_integrations -- homeassistant_comp
+agent apple_homekit as "Apple HomeKit"
+apple_homekit -- ha_integration_description
+
+collections ha_integrations as "Smart Home Integrations"
+ha_integrations -- ha_integration_description
 
 @enduml
 ```
