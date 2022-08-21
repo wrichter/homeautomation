@@ -8,90 +8,116 @@ Given that MicroShift is undergoing rapid development, the notes are already out
 ```plantuml
 @startuml componentmodel.svg
 
-package mqtt {
-    () MQTT
-    [mosquitto] - MQTT
-}
+node rpi as "Raspberry Pi4 8GB" {
 
-package zigbee2mqtt {
-    () HTTP_Zigbee2MQTT as "HTTP"
-    database Zigbee2MQTT_PVC as "Zigbee2MQTT" <<PVC>> {
-        [zigbee2mqtt_comp] as "Zigbee2MQTT"
+    interface Router as "HTTP"
+    package microshift {
+
+        package mqtt {
+            interface MQTT
+            component mosquitto
+            MQTT - mosquitto
+        }
+
+        package zigbee2mqtt {
+            interface HTTP_Zigbee2MQTT as "HTTP"
+            component zigbee2mqtt_comp as "Zigbee2MQTT" 
+            HTTP_Zigbee2MQTT - zigbee2mqtt_comp
+            database Zigbee2MQTT_PVC as "Zigbee2MQTT" <<PVC>> 
+            zigbee2mqtt_comp -- Zigbee2MQTT_PVC
+        }
+        zigbee2mqtt_comp -down-> MQTT
+
+        package ns_homebridge as "homebridge" {
+            interface HTTP_Homebridge as "HTTP"
+            component Homebridge 
+            HTTP_Homebridge - Homebridge
+            database Homebridge_PVC as "Homebridge" <<PVC>> 
+            Homebridge -- Homebridge_PVC
+        }
+        Homebridge -down-> MQTT
+
+
+        package ns_homeassistant as "homeassistant" {
+            interface HTTP_Homeassistant as "HTTP"
+            component homeassistant_comp
+            HTTP_Homeassistant - homeassistant_comp
+            database Homeassistant_PVC as "Homeassistant" <<PVC>>
+            homeassistant_comp -- Homeassistant_PVC
+        }
+        homeassistant_comp -down-> MQTT 
+
+
+        package ns_volkszaehler as "volkszaehler" {
+            component weather_comp as "Weather"
+
+            component vzlogger_comp as "VZLogger"
+            interface HTTP_VZLogger as "HTTP"
+            HTTP_VZLogger - vzlogger_comp
+
+            interface HTTP_Volkszaehler as "HTTP"
+            component Volkszaehler_comp as "Volkszaehler" <<Middleware & UI>>
+            HTTP_Volkszaehler - Volkszaehler_comp
+
+            interface HTTP_Pushserver as "HTTP"
+            component Pushserver_comp as "Push Server"
+            HTTP_Pushserver - Pushserver_comp 
+
+            interface SQL as "SQL"
+            component Volkszaehler_db as "Volkszaehler DB" <<MySQL>>
+            SQL - Volkszaehler_db
+            database Database_PVC as "Database" <<PVC>> 
+            Volkszaehler_db -- Database_PVC
+
+            weather_comp -down-> HTTP_Volkszaehler
+            vzlogger_comp -down-> HTTP_Volkszaehler 
+            vzlogger_comp -down-> HTTP_Pushserver 
+            Volkszaehler_comp -down-> SQL
+
+        }
+        vzlogger_comp -down-> MQTT 
     }
-    [sonoffzigbeedongle] as "Sonoff Zigbee Dongle" <<RPI4 USB Device>>
+    Router - microshift 
+    Router ..> HTTP_Volkszaehler : http://volkszaehler.local
+    Router ..> HTTP_Pushserver : http://volkszaehler.local/ws
+    Router ..> HTTP_Homeassistant : http://homeassistant.local
+    Router ..> HTTP_Homebridge : http://homebridge.local
+    Router ..> HTTP_Zigbee2MQTT : http://zigbee2mqtt.local
+    Router ..> HTTP_VZLogger : http://vzlogger.local
 
-    sonoffzigbeedongle -down- zigbee2mqtt_comp
-    zigbee2mqtt_comp ..> MQTT 
-    zigbee2mqtt_comp - HTTP_Zigbee2MQTT
+    component meterserialinterface_comp as "USB IR RW-Head" <<USB Device>>
+    meterserialinterface_comp -- vzlogger_comp  
+
+    component onewiresensors_comp as "One Wire Subsystem" <<GPIO Device>>
+    onewiresensors_comp -- vzlogger_comp 
+
+    component impulsecounter_comp as "GPIO Pin" <<GPIO Device>>
+    impulsecounter_comp -- vzlogger_comp  
+
+    component zigbee_dongle as "Zigbee Dongle" <<USB Device>>
+    zigbee_dongle -- zigbee2mqtt_comp
 }
 
-package homebridge {
-    () HTTP_Homebridge as "HTTP"
-    database Homebridge_PVC as "Homebridge" <<PVC>> {
-        [Homebridge]
-    }
-    HTTP_Homebridge - Homebridge
+cloud home_network as "Home LAN"
+home_network -- Router
 
-    Homebridge ..> MQTT
-}
+cloud zigbee_network as "Zigbee"
+zigbee_network -- zigbee_dongle
 
-package homeassistant {
-    () HTTP_Homeassistant as "HTTP"
-    database Homeassistant_PVC as "Homeassistant" <<PVC>> {
-        [Homeassistant]
-    }
-    HTTP_Homeassistant - Homeassistant
+collections smart_meters as "Smart Electricity Meters"
+smart_meters -- meterserialinterface_comp 
 
-    Homeassistant ..> MQTT 
-}
+agent weather_api as "Weather API"
+weather_api -- weather_comp 
 
-package volkszaehler {
-    () HTTP_Volkszaehler as "HTTP"
-    () HTTP_Pushserver as "HTTP"
-    
-    [meterserialinterface_comp] as "USB IR RW-Head" <<RPI4 USB Device>>
-    [onewiresensors_comp] as "One Wire Temperature Sensors" <<RPI4 GPIO Device>>
-    [impulsecounter_comp] as "Gas Meter Impulse Counter" <<RPI4 GPIO Device>>
+collections onewire_sensors as "One Wire Temperature Sensors"
+onewire_sensors -- onewiresensors_comp
 
-    [vzlogger_comp] as "VZLogger"
-    [Volkszaehler_comp] as "Volkszaehler Middleware&UI"
-    [Pushserver_comp] as "Push Server"
-    
+agent gas_meter as "Gas Meter Impulse Counter"
+gas_meter -- impulsecounter_comp 
 
-    database Database_PVC as "Database" <<PVC>> {
-        [Volkszaehler_db] as "Volkszaehler DB" <<MySQL>>
-    }
-
-    [weather_comp] as "Weather"
-
-
-    meterserialinterface_comp -down- vzlogger_comp 
-    onewiresensors_comp -down- vzlogger_comp 
-    impulsecounter_comp -down- vzlogger_comp 
-
-
-    HTTP_Pushserver - Pushserver_comp 
-    HTTP_Volkszaehler - Volkszaehler_comp
-    Volkszaehler_db - SQL
-
-
-    Volkszaehler_comp ..> SQL
-    vzlogger_comp ..> MQTT 
-    vzlogger_comp ..> HTTP_Volkszaehler 
-    vzlogger_comp ..> HTTP_Pushserver 
-    weather_comp ..> HTTP_Volkszaehler 
-}
-
-
-
-() Router as "HTTP"
-
-Router ..> HTTP_Volkszaehler : http://volkszaehler.local
-Router ..> HTTP_Pushserver : http://volkszaehler.local/ws
-Router ..> HTTP_Homeassistant : http://homeassistant.local
-Router ..> HTTP_Homebridge : http://homebridge.local
-Router ..> HTTP_Zigbee2MQTT : http://zigbee2mqtt.local
-
+collections ha_integrations as "Home Assistant Integrations"
+ha_integrations -- homeassistant_comp
 
 @enduml
 ```
@@ -284,7 +310,7 @@ ports which have been exposed.
     },
     "ports": {
         "start": 30012,
-        "end": 30030
+        "end": 30019
     },
     "description": "Home Smart Home",
     "platforms": [
@@ -313,5 +339,14 @@ ports which have been exposed.
 ## HomeAssistant
 
 ## for sonos
-firewall-cmd --add-port=1400/tcp --permanent
-[root@microshift ~]# firewall-cmd --reload
+```
+# firewall-cmd --add-port=1400/tcp --permanent
+# firewall-cmd --reload
+```
+
+## for homekit
+
+```
+# firewall-cmd --add-port=21064-21080/tcp --permanent
+# firewall-cmd --reload
+```

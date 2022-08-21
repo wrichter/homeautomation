@@ -14,4 +14,4 @@ spec:
       nodePort: 30101
   selector:
     app: mosquitto
-  type: NodePort
+  type: NodePort # NodePort to allow "hostNetwork: true" containers to access the service

@@ -12,7 +12,7 @@ spec:
     matchLabels:
       app: homeassistant
   strategy:
-    # since we're using hosteNetwork: true we can't do a rolling update since the port won't be free
+    # since we're using hostNetwork: true we can't do a rolling update since the port won't be free
     type: Recreate
   template:
     metadata:
