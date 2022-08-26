@@ -22,7 +22,7 @@ advanced:
   - console
 #  - file
 
-availability: true
+availability: false
 
 ## Map devices to persistent /data directory
 devices: devices.yaml

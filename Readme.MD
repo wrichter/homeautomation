@@ -28,14 +28,14 @@ node rpi as "Raspberry Pi4 8GB" {
         }
         zigbee2mqtt_comp -down-> MQTT
 
-        package ns_homebridge as "homebridge" {
+        /'package ns_homebridge as "homebridge" {
             interface HTTP_homebridge as "HTTP"
             component homebridge_comp as "Homebridge" 
             HTTP_homebridge - homebridge_comp
             database Homebridge_PVC as "Homebridge" <<PVC>> 
             homebridge_comp -- Homebridge_PVC
         }
-        homebridge_comp -down-> MQTT
+        homebridge_comp -down-> MQTT'/
 
 
         package ns_homeassistant as "homeassistant" {
@@ -45,10 +45,10 @@ node rpi as "Raspberry Pi4 8GB" {
             database Homeassistant_PVC as "Homeassistant" <<PVC>>
             homeassistant_comp -- Homeassistant_PVC
         }
-        homeassistant_comp -down-> MQTT 
+        homeassistant_comp -down-> MQTT
 
         package ns_volkszaehler as "volkszaehler" {
-            'component weather_comp as "Weather"
+            'component weather_comp as "Weather" <<custom code>>
 
             component vzlogger_comp as "VZLogger"
             interface HTTP_VZLogger as "HTTP"
@@ -92,7 +92,7 @@ node rpi as "Raspberry Pi4 8GB" {
     Router ..> HTTP_Volkszaehler : http://volkszaehler.local
     Router ..> HTTP_Pushserver : http://volkszaehler.local/ws
     Router ..> HTTP_Homeassistant : http://homeassistant.local
-    Router ..> HTTP_homebridge : http://homebridge.local
+    'Router ..> HTTP_homebridge : http://homebridge.local
     Router ..> HTTP_Zigbee2MQTT : http://zigbee2mqtt.local
     Router ..> HTTP_VZLogger : http://vzlogger.local
     Router ..> HTTP_nodered : http://node-red.local
@@ -109,6 +109,8 @@ node rpi as "Raspberry Pi4 8GB" {
 
     component zigbee_dongle as "Zigbee Dongle" <<USB Device>>
     zigbee_dongle -- zigbee2mqtt_comp
+    
+
 
     rectangle ha_integration_description [
         //integration of many//
@@ -116,7 +118,7 @@ node rpi as "Raspberry Pi4 8GB" {
         //with Apple HomeKit//
     ]
     ha_integration_description -- homeassistant_comp
-    ha_integration_description -- homebridge_comp
+    'ha_integration_description -- homebridge_comp
 }
 
 cloud home_network as "Home LAN"
@@ -128,8 +130,9 @@ zigbee_network -- zigbee_dongle
 collections smart_meters as "Smart Electricity Meters"
 smart_meters -- meterserialinterface_comp 
 
-'agent weather_api as "Weather API"
+agent weather_api as "Weather API"
 'weather_api -- weather_comp 
+weather_api -- ha_integration_description
 
 collections onewire_sensors as "One Wire Temperature Sensors"
 onewire_sensors -- onewiresensors_comp
@@ -142,6 +145,9 @@ apple_homekit -- ha_integration_description
 
 collections ha_integrations as "Smart Home Integrations"
 ha_integrations -- ha_integration_description
+
+'agent zigbee_bridge as "Zigbee Bridge"
+'zigbee_bridge -- ha_integration_description
 
 @enduml
 ```

@@ -1,0 +1,388 @@
+[
+    {
+        "id": "dca8dad50a32fbf1",
+        "type": "tab",
+        "label": "To Volkszaehler",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1bb30d95ca17b1d5",
+        "type": "template",
+        "z": "dca8dad50a32fbf1",
+        "name": "Set Middleware URL",
+        "field": "url",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "http://volkszaehler.volkszaehler:8080/data/{{uuid}}.json?ts={{timestamp}}&value={{payload}}",
+        "output": "str",
+        "x": 400,
+        "y": 380,
+        "wires": [
+            [
+                "13fcb511e451a9df"
+            ]
+        ]
+    },
+    {
+        "id": "c92130e7d166eeb5",
+        "type": "json",
+        "z": "dca8dad50a32fbf1",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 810,
+        "y": 380,
+        "wires": [
+            [
+                "4d7e6af8937ea737"
+            ]
+        ]
+    },
+    {
+        "id": "4d7e6af8937ea737",
+        "type": "http request",
+        "z": "dca8dad50a32fbf1",
+        "name": "POST VZ Middleware",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": true,
+        "x": 1000,
+        "y": 380,
+        "wires": [
+            [
+                "d04562efdcc8a2dd"
+            ]
+        ]
+    },
+    {
+        "id": "d04562efdcc8a2dd",
+        "type": "debug",
+        "z": "dca8dad50a32fbf1",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1190,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "92dbcb76d701611d",
+        "type": "template",
+        "z": "dca8dad50a32fbf1",
+        "name": "Format Push Data",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\"data\":[{\"uuid\":\"{{uuid}}\",\"tuples\":[[{{timestamp}}, {{payload}}]]}]}",
+        "output": "json",
+        "x": 390,
+        "y": 540,
+        "wires": [
+            [
+                "62f2b7e7cdf1bd5c"
+            ]
+        ]
+    },
+    {
+        "id": "62f2b7e7cdf1bd5c",
+        "type": "http request",
+        "z": "dca8dad50a32fbf1",
+        "name": "POST VZ Push Server",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://pushserver.volkszaehler:5582/",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 620,
+        "y": 540,
+        "wires": [
+            [
+                "bcc398807209f8e5"
+            ]
+        ]
+    },
+    {
+        "id": "bcc398807209f8e5",
+        "type": "debug",
+        "z": "dca8dad50a32fbf1",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "13fcb511e451a9df",
+        "type": "change",
+        "z": "dca8dad50a32fbf1",
+        "name": "",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 630,
+        "y": 380,
+        "wires": [
+            [
+                "c92130e7d166eeb5"
+            ]
+        ]
+    },
+    {
+        "id": "7eb052312e02dc73",
+        "type": "change",
+        "z": "dca8dad50a32fbf1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "timestamp",
+                "pt": "msg",
+                "to": "",
+                "tot": "date"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 150,
+        "y": 380,
+        "wires": [
+            [
+                "92dbcb76d701611d",
+                "1bb30d95ca17b1d5"
+            ]
+        ]
+    },
+    {
+        "id": "5680c40d7d24e41c",
+        "type": "server-state-changed",
+        "z": "dca8dad50a32fbf1",
+        "name": "",
+        "server": "a8811a9eaca9c82f",
+        "version": 4,
+        "exposeToHomeAssistant": false,
+        "haConfig": [
+            {
+                "property": "name",
+                "value": ""
+            },
+            {
+                "property": "icon",
+                "value": ""
+            }
+        ],
+        "entityidfilter": "sensor.aussen_temperature",
+        "entityidfiltertype": "exact",
+        "outputinitially": false,
+        "state_type": "str",
+        "haltifstate": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is",
+        "outputs": 1,
+        "output_only_on_state_change": true,
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "ignorePrevStateNull": false,
+        "ignorePrevStateUnknown": false,
+        "ignorePrevStateUnavailable": false,
+        "ignoreCurrentStateUnknown": false,
+        "ignoreCurrentStateUnavailable": false,
+        "outputProperties": [
+            {
+                "property": "payload",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            },
+            {
+                "property": "data",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "eventData"
+            },
+            {
+                "property": "topic",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "triggerId"
+            }
+        ],
+        "x": 230,
+        "y": 40,
+        "wires": [
+            [
+                "16e1596c242d74fa"
+            ]
+        ]
+    },
+    {
+        "id": "16e1596c242d74fa",
+        "type": "change",
+        "z": "dca8dad50a32fbf1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "uuid",
+                "pt": "msg",
+                "to": "ca61f510-252a-11ed-b27d-5bdf8574b523",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 40,
+        "wires": [
+            [
+                "7eb052312e02dc73"
+            ]
+        ]
+    },
+    {
+        "id": "c7b7e0334b53a109",
+        "type": "change",
+        "z": "dca8dad50a32fbf1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "uuid",
+                "pt": "msg",
+                "to": "4667bfa0-e2cc-11ec-8264-a530b5b66fbb",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 570,
+        "y": 120,
+        "wires": [
+            [
+                "7eb052312e02dc73"
+            ]
+        ]
+    },
+    {
+        "id": "2b68a06d24a6bb93",
+        "type": "server-state-changed",
+        "z": "dca8dad50a32fbf1",
+        "name": "",
+        "server": "a8811a9eaca9c82f",
+        "version": 4,
+        "exposeToHomeAssistant": false,
+        "haConfig": [
+            {
+                "property": "name",
+                "value": ""
+            },
+            {
+                "property": "icon",
+                "value": ""
+            }
+        ],
+        "entityidfilter": "sensor.openweathermap_temperature",
+        "entityidfiltertype": "exact",
+        "outputinitially": false,
+        "state_type": "str",
+        "haltifstate": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is",
+        "outputs": 1,
+        "output_only_on_state_change": true,
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "ignorePrevStateNull": false,
+        "ignorePrevStateUnknown": false,
+        "ignorePrevStateUnavailable": false,
+        "ignoreCurrentStateUnknown": false,
+        "ignoreCurrentStateUnavailable": false,
+        "outputProperties": [
+            {
+                "property": "payload",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            },
+            {
+                "property": "data",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "eventData"
+            },
+            {
+                "property": "topic",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "triggerId"
+            }
+        ],
+        "x": 260,
+        "y": 120,
+        "wires": [
+            [
+                "c7b7e0334b53a109"
+            ]
+        ]
+    },
+    {
+        "id": "a8811a9eaca9c82f",
+        "type": "server",
+        "name": "Home Assistant",
+        "version": 2,
+        "addon": false,
+        "rejectUnauthorizedCerts": true,
+        "ha_boolean": "y|yes|true|on|home|open",
+        "connectionDelay": true,
+        "cacheJson": true,
+        "heartbeat": false,
+        "heartbeatInterval": "30"
+    }
+]
