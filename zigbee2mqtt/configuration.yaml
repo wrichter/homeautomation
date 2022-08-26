@@ -15,6 +15,7 @@ frontend:
   port: 8080
 # Let Zigbee2MQTT generate a new network key on first start
 advanced:
+  last_seen: ISO_8601_local
   #network_key: GENERATE
   #log_output: ["console"]
   log_level: info
