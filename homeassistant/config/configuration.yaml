@@ -1,0 +1,243 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+http:
+  # For extra security set this to only accept connections on localhost if NGINX is on the same machine
+  # Uncommenting this will mean that you can only reach Home Assistant using the proxy, not directly via IP from other clients.
+  # server_host: 127.0.0.1
+  use_x_forwarded_for: true
+  # You must set the trusted proxy IP address so that Home Assistant will properly accept connections
+  # Set this to your NGINX machine IP, or localhost if hosted on the same machine.
+  trusted_proxies: !secret microshift_ip
+
+homeassistant:
+  name: Home
+  latitude: !secret latitude
+  longitude: !secret longitude
+  elevation: !secret elevation
+  #unit_System: metric
+
+  auth_providers:
+    - type: trusted_networks
+      trusted_networks:
+        - !secret homne_network_cidr
+        - fd00::/8
+        - 127.0.0.1
+        - ::1
+      allow_bypass_login: true
+    - type: homeassistant
+
+lovelace:
+  mode: yaml
+  resources:
+    - url: /local/auto-entities.js
+      type: module
+
+mqtt:
+  sensor:
+  - name: "Bezug 1.8.0"
+    state_topic: "vzlogger/data/chn0/agg"
+    state_class: total_increasing
+    unit_of_measurement: Wh
+    device_class: energy
+  - name: "Einspeisung 2.8.0"
+    state_topic: "vzlogger/data/chn1/agg"
+    state_class: total_increasing
+    unit_of_measurement: Wh
+    device_class: energy
+  - name: "Erzeugung 1.8.0"
+    state_topic: "vzlogger/data/chn2/agg"
+    state_class: total_increasing
+    unit_of_measurement: Wh
+    device_class: energy
+
+
+wake_on_lan: 
+
+# waste_collection_schedule source configuration
+#https://github.com/mampfes/hacs_waste_collection_schedule
+waste_collection_schedule:
+  sources:
+    - name: abfall_io
+      args:
+        key: !secret waste_collection_key
+        f_id_kommune: !secret waste_collection_key
+        f_id_bezirk: !secret waste_collection_bezirk
+        f_id_strasse: !secret waste_collection_strasse
+        f_abfallarten:
+        - 50
+        - 53
+        - 31
+        - 299
+      customize:
+      - type: Biomüll
+        icon: mdi:flower
+      - type: Wertstoffe
+        icon: mdi:recycle
+      - type: Restmüll
+        icon: mdi:trash-can
+      - type: Papier
+        icon: mdi:trash-can-outline
+
+
+sensor:
+  - platform: dwd_weather_warnings
+    region_name: !secret dwd_region
+  - platform: waste_collection_schedule
+    name: AbfallRestmuell
+    details_format: "upcoming"
+    value_template: '{% if value.daysTo == 0 %}Heute{% elif value.daysTo == 1 %}Morgen{% else %}in {{value.daysTo}} Tagen{% endif %}'
+    add_days_to: true
+    types:
+      - Restmüll
+  - platform: waste_collection_schedule
+    name: AbfallPapierTonne
+    details_format: "upcoming"
+    value_template: '{% if value.daysTo == 0 %}Heute{% elif value.daysTo == 1 %}Morgen{% else %}in {{value.daysTo}} Tagen{% endif %}'
+    add_days_to: true
+    types:
+      - Papier
+  - platform: waste_collection_schedule
+    name: AbfallWertstoffe
+    details_format: "upcoming"
+    value_template: '{% if value.daysTo == 0 %}Heute{% elif value.daysTo == 1 %}Morgen{% else %}in {{value.daysTo}} Tagen{% endif %}'
+    add_days_to: true
+    types:
+      - Wertstoffe
+  - platform: waste_collection_schedule
+    name: AbfallBiotonne
+    details_format: "upcoming"
+    value_template: '{% if value.daysTo == 0 %}Heute{% elif value.daysTo == 1 %}Morgen{% else %}in {{value.daysTo}} Tagen{% endif %}'
+    add_days_to: true
+    types:
+      - Biomüll
+  - platform: systemmonitor
+    resources:
+      - type: disk_use_percent
+        arg: /config
+#      - type: disk_use
+#      - type: disk_free
+      - type: memory_use_percent
+#      - type: memory_use
+#      - type: memory_free
+      # - type: swap_use_percent
+      # - type: swap_use
+      # - type: swap_free
+      - type: load_1m
+      - type: load_5m
+      - type: load_15m
+      # - type: network_in
+      #   arg: eth0
+      # - type: network_out
+      #   arg: eth0
+      # - type: throughput_network_in
+      #   arg: eth0
+      # - type: throughput_network_out
+      #   arg: eth0
+      # - type: packets_in
+      #   arg: eth0
+      # - type: packets_out
+      #   arg: eth0
+      # - type: ipv4_address
+      #   arg: eth0
+      # - type: ipv6_address
+      #   arg: eth0
+      - type: processor_use
+      - type: processor_temperature
+      - type: last_boot
+
+rest:
+  - scan_interval: 60
+    resource: !secret awair_local_api_url
+    sensor:
+    - name: awair_az_sensors
+      json_attributes:
+        - timestamp
+        - score
+        - dew_point
+        - temp
+        - humid
+        - abs_humid
+        - co2
+        - co2_est
+        - voc
+        - voc_baseline
+        - voc_h2_raw
+        - voc_ethanol_raw
+        - pm25
+        - pm10_est
+      value_template: 'OK'
+      unique_id: 72c68506-d665-4fd5-b26d-4f4258646cec
+
+
+template: 
+- unique_id: awair_arbeitszimmer
+  sensor:
+    - unique_id: score
+      state: '{{ states.sensor.awair_az_sensors.attributes["score"] }}'
+      state_class: measurement
+      unit_of_measurement: '%'
+      attributes:
+        friendly_name: "Awair Air Quality Score"
+    - unique_id: temperature
+      state: '{{ states.sensor.awair_az_sensors.attributes["temp"] }}'
+      state_class: measurement
+      unit_of_measurement: °C
+      device_class: temperature
+      attributes:
+        friendly_name: "Temperature"
+    - unique_id: humidity
+      state: '{{ states.sensor.awair_az_sensors.attributes["humid"] }}'
+      state_class: measurement
+      unit_of_measurement: '%'
+      device_class: humidity
+      attributes:
+        friendly_name: "Humidity"
+    - unique_id: co2
+      state: '{{ states.sensor.awair_az_sensors.attributes["co2"] }}'
+      state_class: measurement
+      unit_of_measurement: 'ppm'
+      device_class: carbon_dioxide
+      attributes:
+        friendly_name: "Carbon Dioxide"
+    - unique_id: voc
+      state: '{{ states.sensor.awair_az_sensors.attributes["voc"] }}'
+      state_class: measurement
+      unit_of_measurement: 'ppb'
+      device_class: volatile_organic_compounds
+      attributes:
+        friendly_name: "Total VOC"
+    - unique_id: pm25
+      state: '{{ states.sensor.awair_az_sensors.attributes["pm25"] }}'
+      state_class: measurement
+      unit_of_measurement: 'μg/m³'
+      device_class: pm25
+      attributes:
+        friendly_name: "Particulate Matter 2.5"
+    - unique_id: pm10
+      state: '{{ states.sensor.awair_az_sensors.attributes["pm10_est"] }}'
+      state_class: measurement
+      unit_of_measurement: 'μg/m³'
+      device_class: pm10
+      attributes:
+        friendly_name: "Particulate Matter 10"
+      
+# logger:
+#   default: info
+#   logs:
+#     libdyson: debug
+#     custom_components.dyson_local: debug
+#     custom_components.dyson_cloud: debug
+
+# logger:
+#   default: info
+#   logs:
+#     custom_components.truenas: debug

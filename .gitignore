@@ -1,2 +1,3 @@
 volkszaehler/weather/weather.ini
-homeassistant/config/*
+homeassistant/config/secrets.yaml
+

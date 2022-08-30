@@ -37,6 +37,9 @@ spec:
         - name: homeassistant-cm
           mountPath: /config/configuration.yaml
           subPath: configuration.yaml
+        - name: homeassistant-cm
+          mountPath: /config/secrets.yaml
+          subPath: secrets.yaml
         livenessProbe:
           httpGet:
             path: /

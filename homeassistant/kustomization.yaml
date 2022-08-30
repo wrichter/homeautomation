@@ -11,10 +11,7 @@ configMapGenerator:
 - name: homeassistant
   files: 
   - config/configuration.yaml
-  - config/scenes.yaml
-  - config/scripts.yaml
   - config/secrets.yaml
-  - config/automations.yaml
 
 images:
 - name: homeassistant
