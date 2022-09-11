@@ -16,8 +16,9 @@ frontend:
 # Let Zigbee2MQTT generate a new network key on first start
 advanced:
   last_seen: ISO_8601_local
-  #network_key: GENERATE
-  #log_output: ["console"]
+  network_key: '!secret network_key'
+  pan_id: 0x1a63
+  ext_pan_id: [0xDD, 0xAA, 0xDD, 0xAA, 0xDD, 0xAA, 0xDD, 0xAA]
   log_level: info
   log_output:
   - console

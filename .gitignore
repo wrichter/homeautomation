@@ -1,3 +1,4 @@
 volkszaehler/weather/weather.ini
 homeassistant/config/secrets.yaml
+zigbee2mqtt/secret.yaml
 
