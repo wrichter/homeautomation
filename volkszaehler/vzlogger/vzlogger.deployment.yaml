@@ -22,6 +22,16 @@ spec:
       labels:
         app: vzlogger
     spec:
+      initContainers:
+      - name: init-pushserver
+        image: busybox:latest
+        command: ['sh', '-c', "until nslookup pushserver.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for pushserver; sleep 2; done"]
+      - name: init-middleware
+        image: busybox:latest
+        command: ['sh', '-c', "until nslookup volkszaehler.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for middleware; sleep 2; done"]
+      - name: init-mqtt
+        image: busybox:latest
+        command: ['sh', '-c', "until nslookup mosquitto.mqtt.svc.cluster.local; do echo waiting for mqtt; sleep 2; done"]
       containers:
       - image: vzlogger
         imagePullPolicy: Always
