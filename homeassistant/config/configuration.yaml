@@ -58,6 +58,9 @@ mqtt:
     state_class: total_increasing
     unit_of_measurement: Wh
     device_class: energy
+  - name: "Gas Impulse"
+    state_topic: "vzlogger/data/chn3/agg"
+    state_class: total
 
 
 wake_on_lan: 
