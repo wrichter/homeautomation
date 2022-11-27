@@ -156,7 +156,11 @@ sensor:
       - type: processor_use
       - type: processor_temperature
       - type: last_boot
-      
+
+device_tracker:
+  - platform: bluetooth_le_tracker
+#    track_new_devices: True
+
 # logger:
 #   default: info
 #   logs:
