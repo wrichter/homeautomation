@@ -161,6 +161,17 @@ device_tracker:
   - platform: bluetooth_le_tracker
 #    track_new_devices: True
 
+binary_sensor:
+  - platform: workday
+    country: DE
+    province: BW
+    name: arbeitstag_heute
+  - platform: workday
+    country: DE
+    province: BW
+    name: arbeitstag_morgen  
+    days_offset: 1
+
 # logger:
 #   default: info
 #   logs:
