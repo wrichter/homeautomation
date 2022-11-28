@@ -58,9 +58,9 @@ mqtt:
     state_class: total_increasing
     unit_of_measurement: Wh
     device_class: energy
-  - name: "Gas Impulse"
-    state_topic: "vzlogger/data/chn3/agg"
-    state_class: total
+#  - name: "Gas Impulse"
+#    state_topic: "vzlogger/data/chn3/agg"
+#    state_class: total
 
 
 wake_on_lan: 
@@ -156,6 +156,49 @@ sensor:
       - type: processor_use
       - type: processor_temperature
       - type: last_boot
+
+###### BEGIN GASZAEHLER #####
+counter:
+  gas_impulse_agg:
+    initial: 0
+    step: 1
+    name: Gas Impulse aggregiert
+
+automation gaszaehler:
+- alias: Gas Impulse aggregieren
+  description: ""
+  trigger:
+    - platform: mqtt
+      topic: vzlogger/data/chn3/agg
+  condition: []
+  action:
+    - service: counter.configure
+      data:
+        value: >-
+          {{ states('counter.gas_impulse_agg')|int + trigger.payload|int }}
+      target:
+        entity_id: counter.gas_impulse_agg
+  mode: single
+
+template:
+  - sensor: 
+    - name: "Gaszähler m³"
+      unique_id: gaszaehler
+      state: "{{ states ('counter.gas_impulse_agg') | float * 0.01 }}"
+      unit_of_measurement: "m³"
+      icon: "mdi:fire"
+      device_class: gas
+      state_class: total_increasing
+  - sensor: 
+    - name: "Gaszähler kWh"
+      unique_id: gaszaehler_kwh
+      state: "{{ (states ('sensor.gaszaehler') | float * 0.9178 * 11.3740) | round(3) }}"
+      unit_of_measurement: "kWh"
+      icon: "mdi:fire"
+      device_class: gas
+      state_class: total_increasing
+
+####### END GASZAEHLER #######
 
 device_tracker:
   - platform: bluetooth_le_tracker
