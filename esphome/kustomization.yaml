@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- esphome.deployment.yaml
+- esphome.pvc.yaml
+- esphome.service.yaml
+- esphome.route.yaml
+
+
+images:
+- name: esphome
+  newName: docker.io/esphome/esphome
+
