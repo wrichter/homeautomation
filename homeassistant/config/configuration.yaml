@@ -23,6 +23,7 @@ homeassistant:
   latitude: !secret latitude
   longitude: !secret longitude
   elevation: !secret elevation
+  country: !secret country
   #unit_System: metric
 
   auth_providers:
