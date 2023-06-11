@@ -6,6 +6,10 @@ resources:
 - homeassistant.pvc.yaml
 - homeassistant.service.yaml
 - homeassistant.route.yaml
+- signalapi.deployment.yaml
+- signalapi.pvc.yaml
+- signalapi.service.yaml
+- signalapi.route.yaml
 
 configMapGenerator:
 - name: homeassistant
@@ -19,4 +23,6 @@ images:
 #  newTag: stable
   newName: localhost/home-assistant
   newTag: latest
-
+- name: signal-cli-rest-api
+  newName: docker.io/bbernhard/signal-cli-rest-api
+  newTag: latest

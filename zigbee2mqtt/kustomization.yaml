@@ -22,5 +22,5 @@ secretGenerator:
 
 images:
 - name: zigbee2mqtt
-  newName: koenkk/zigbee2mqtt
+  newName: ghcr.io/koenkk/zigbee2mqtt
   newTag: latest

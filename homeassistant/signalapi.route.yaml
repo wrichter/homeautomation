@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: signal-cli-rest-api
+spec:
+  host: signal-cli-rest-api.familie-richter.net
+  port:
+    targetPort: ui
+  to:
+    kind: Service
+    name: signal-cli-rest-api
+    weight: 100
+  wildcardPolicy: None

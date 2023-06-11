@@ -10,5 +10,5 @@ resources:
 
 images:
 - name: esphome
-  newName: docker.io/esphome/esphome
+  newName: ghcr.io/esphome/esphome
 

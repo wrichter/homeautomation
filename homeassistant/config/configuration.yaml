@@ -59,9 +59,21 @@ mqtt:
     state_class: total_increasing
     unit_of_measurement: Wh
     device_class: energy
-#  - name: "Gas Impulse"
+#  - name: "Gas Impulse" # configured below
 #    state_topic: "vzlogger/data/chn3/agg"
 #    state_class: total
+  - name: "Warmwasser Speicher Rücklauf"
+    state_topic: "vzlogger/data/chn4/raw"
+    state_class: "measurement"
+    unit_of_measurement: "°C"
+    icon: "mdi:water-percent"
+    device_class: "temperature"
+  - name: "Warmwasser Speicher Vorlauf"
+    state_topic: "vzlogger/data/chn5/raw"
+    state_class: "measurement"
+    unit_of_measurement: "°C"
+    icon: "mdi:water-percent"
+    device_class: "temperature"
 
 
 wake_on_lan: 
@@ -76,6 +88,7 @@ waste_collection_schedule:
         f_id_kommune: !secret waste_collection_key
         f_id_bezirk: !secret waste_collection_bezirk
         f_id_strasse: !secret waste_collection_strasse
+        f_id_strasse_hnr: !secret waste_collection_strasse_hnr
         f_abfallarten:
         - 50
         - 53
@@ -93,8 +106,7 @@ waste_collection_schedule:
 
 
 sensor:
-  - platform: dwd_weather_warnings
-    region_name: !secret dwd_region
+
   - platform: waste_collection_schedule
     name: AbfallRestmuell
     details_format: "upcoming"
@@ -173,7 +185,7 @@ automation gaszaehler:
       topic: vzlogger/data/chn3/agg
   condition: []
   action:
-    - service: counter.configure
+    - service: counter.set_value
       data:
         value: >-
           {{ states('counter.gas_impulse_agg')|int + trigger.payload|int }}
@@ -190,14 +202,14 @@ template:
       icon: "mdi:fire"
       device_class: gas
       state_class: total_increasing
-  - sensor: 
-    - name: "Gaszähler kWh"
-      unique_id: gaszaehler_kwh
-      state: "{{ (states ('sensor.gaszaehler') | float * 0.9178 * 11.3740) | round(3) }}"
-      unit_of_measurement: "kWh"
-      icon: "mdi:fire"
-      device_class: gas
-      state_class: total_increasing
+  # - sensor: 
+  #   - name: "Gaszähler kWh"
+  #     unique_id: gaszaehler_kwh
+  #     state: "{{ (states ('sensor.gaszaehler') | float * 0.9178 * 11.3740) | round(3) }}"
+  #     unit_of_measurement: "kWh"
+  #     icon: "mdi:fire"
+  #     device_class: gas
+  #     state_class: total_increasing
 
 ####### END GASZAEHLER #######
 
@@ -205,16 +217,20 @@ device_tracker:
   - platform: bluetooth_le_tracker
 #    track_new_devices: True
 
-binary_sensor:
-  - platform: workday
-    country: DE
-    province: BW
-    name: arbeitstag_heute
-  - platform: workday
-    country: DE
-    province: BW
-    name: arbeitstag_morgen  
-    days_offset: 1
+
+calendar:
+  - platform: caldav
+    url: !secret school_calendar_url
+
+
+notify:
+  - name: signal
+    platform: signal_messenger
+    url: !secret signal_rest_api_url # the URL where the Signal Messenger REST API is listening
+    number: !secret telefone_number # the sender number
+    recipients: # one or more recipients
+      - !secret signal_group 
+
 
 # logger:
 #   default: info
