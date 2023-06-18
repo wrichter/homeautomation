@@ -19,10 +19,10 @@ configMapGenerator:
 
 images:
 - name: homeassistant
-#  newName: ghcr.io/home-assistant/home-assistant
-#  newTag: stable
-  newName: localhost/home-assistant
-  newTag: latest
+  newName: ghcr.io/home-assistant/home-assistant
+  newTag: stable
+#  newName: localhost/home-assistant
+#  newTag: latest
 - name: signal-cli-rest-api
   newName: docker.io/bbernhard/signal-cli-rest-api
   newTag: latest
