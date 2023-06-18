@@ -103,6 +103,8 @@ waste_collection_schedule:
         icon: mdi:trash-can
       - type: Papier
         icon: mdi:trash-can-outline
+  day_switch_time: 04:00
+  random_fetch_time_offset: 30
 
 
 sensor:
