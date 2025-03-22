@@ -186,11 +186,6 @@ device_tracker:
 #    track_new_devices: True
 
 
-calendar:
-  - platform: caldav
-    url: !secret school_calendar_url
-
-
 notify:
   - name: signal
     platform: signal_messenger
