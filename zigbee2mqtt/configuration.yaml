@@ -19,7 +19,7 @@ advanced:
   network_key: '!secret network_key'
   pan_id: 0x1a63
   ext_pan_id: [0xDD, 0xAA, 0xDD, 0xAA, 0xDD, 0xAA, 0xDD, 0xAA]
-  log_level: info
+  log_level: warn
   log_output:
   - console
 #  - file
