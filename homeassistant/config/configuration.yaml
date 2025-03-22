@@ -78,65 +78,7 @@ mqtt:
 
 wake_on_lan: 
 
-# waste_collection_schedule source configuration
-#https://github.com/mampfes/hacs_waste_collection_schedule
-waste_collection_schedule:
-  sources:
-    - name: abfall_io
-      args:
-        key: !secret waste_collection_key
-        f_id_kommune: !secret waste_collection_key
-        f_id_bezirk: !secret waste_collection_bezirk
-        f_id_strasse: !secret waste_collection_strasse
-        f_id_strasse_hnr: !secret waste_collection_strasse_hnr
-        f_abfallarten:
-        - 50
-        - 53
-        - 31
-        - 299
-      customize:
-      - type: Biomüll
-        icon: mdi:flower
-      - type: Wertstoffe
-        icon: mdi:recycle
-      - type: Restmüll
-        icon: mdi:trash-can
-      - type: Papier
-        icon: mdi:trash-can-outline
-  day_switch_time: 04:00
-  random_fetch_time_offset: 30
-
-
 sensor:
-
-  - platform: waste_collection_schedule
-    name: AbfallRestmuell
-    details_format: "upcoming"
-    value_template: '{% if value.daysTo == 0 %}Heute{% elif value.daysTo == 1 %}Morgen{% else %}in {{value.daysTo}} Tagen{% endif %}'
-    add_days_to: true
-    types:
-      - Restmüll
-  - platform: waste_collection_schedule
-    name: AbfallPapierTonne
-    details_format: "upcoming"
-    value_template: '{% if value.daysTo == 0 %}Heute{% elif value.daysTo == 1 %}Morgen{% else %}in {{value.daysTo}} Tagen{% endif %}'
-    add_days_to: true
-    types:
-      - Papier
-  - platform: waste_collection_schedule
-    name: AbfallWertstoffe
-    details_format: "upcoming"
-    value_template: '{% if value.daysTo == 0 %}Heute{% elif value.daysTo == 1 %}Morgen{% else %}in {{value.daysTo}} Tagen{% endif %}'
-    add_days_to: true
-    types:
-      - Wertstoffe
-  - platform: waste_collection_schedule
-    name: AbfallBiotonne
-    details_format: "upcoming"
-    value_template: '{% if value.daysTo == 0 %}Heute{% elif value.daysTo == 1 %}Morgen{% else %}in {{value.daysTo}} Tagen{% endif %}'
-    add_days_to: true
-    types:
-      - Biomüll
 
 ###### BEGIN GASZAEHLER #####
 counter:
