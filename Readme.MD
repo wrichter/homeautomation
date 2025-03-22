@@ -161,6 +161,9 @@ ha_integrations -- ha_integration_description
 
 ### Resize Partition
 
+Fedora 38: If the `resize2fs` command fails, check if the device is mounted as read-only `/sysroot` and if so, remount rw before attempting resize: `mount -o remount,rw /sysroot`. Reboot after resizing: `systemctl reboot`.
+
+
 ```bash
 [root@p200300cfaf07d500c73722aece5bd6e0 ~]# parted
 GNU Parted 3.4
@@ -223,9 +226,20 @@ sed -i 's/^.\?DNSStubListener=.*$/DNSStubListener=no/' /etc/systemd/resolved.con
 
 ### Install CRIO + GIT + AVAHI/mDNS
 
+Fedora 36:
 ```bash
 curl -L -o /etc/yum.repos.d/fedora-modular.repo https://src.fedoraproject.org/rpms/fedora-repos/raw/rawhide/f/fedora-modular.repo 
 curl -L -o /etc/yum.repos.d/fedora-updates-modular.repo https://src.fedoraproject.org/rpms/fedora-repos/raw/rawhide/f/fedora-updates-modular.repo 
+```
+
+Fedora 38
+```bash
+rpm-ostree install fedora-repos-modular
+systemctl reboot
+```
+
+
+```bash
 curl -L -o /etc/yum.repos.d/group_redhat-et-microshift-fedora-36.repo https://copr.fedorainfracloud.org/coprs/g/redhat-et/microshift/repo/fedora-36/group_redhat-et-microshift-fedora-36.repo
 
 rpm-ostree update
