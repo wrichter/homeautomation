@@ -23,5 +23,5 @@ configMapGenerator:
 
 images:
 - name: volkszaehler
-  newName: localhost/volkszaehler
-
+  #newName: localhost/volkszaehler
+  newName: quay.io/wrichter/volkszaehler

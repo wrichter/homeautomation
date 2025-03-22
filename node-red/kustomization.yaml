@@ -9,6 +9,6 @@ resources:
 
 images:
 - name: node-red
-  newName: localhost/node-red
+  newName: quay.io/wrichter/node-red
   newTag: latest
 

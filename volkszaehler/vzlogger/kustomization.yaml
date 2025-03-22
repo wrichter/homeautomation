@@ -16,5 +16,6 @@ configMapGenerator:
 
 images:
 - name: vzlogger
-  newName: localhost/vzlogger
+  #newName: localhost/vzlogger
+  newName: quay.io/wrichter/vzlogger
 
