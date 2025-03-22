@@ -22,10 +22,6 @@ spec:
     spec:
       containers:
       - image: homeassistant
-### WORKAROUND START - ICS PACKAGE DEPENDENCY FOR ICS_CALENDAR IS MISSING FROM HA DOCKER IMAGE
-      - args: ["-c", "pip install ics && exec /init"]
-        command: ["/bin/sh"]
-### WORKAROUND END
         imagePullPolicy: IfNotPresent
         name: homeassistant
         ports:
