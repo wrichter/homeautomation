@@ -3,3 +3,4 @@ homeassistant/config/secrets.yaml
 zigbee2mqtt/secret.yaml
 
 esphome/configs/secrets.yaml
+.DS_Store
