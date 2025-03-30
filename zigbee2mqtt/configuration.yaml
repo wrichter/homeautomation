@@ -1,38 +1,33 @@
-# Let new devices join our zigbee network
-permit_join: false
-# Home Assistant integration (MQTT discovery)
-homeassistant: true
-# Docker-Compose makes the MQTT-Server available using "mqtt" hostname
-# MQTT server URL
+homeassistant:
+  enabled: true
 mqtt:
   base_topic: zigbee2mqtt
-  server: "mqtt://mosquitto.mqtt" # mqtt://<name_of_service>.<name_of_namespace> (mosquitto)
-# Zigbee Adapter path
+  server: mqtt://mosquitto.mqtt
 serial:
   port: /dev/ttyACM0
   adapter: zstack
-# Enable the Zigbee2MQTT frontend
 frontend:
+  enabled: true
   port: 8080
-# Let Zigbee2MQTT generate a new network key on first start
 advanced:
   last_seen: ISO_8601_local
   network_key: '!secret network_key'
-  pan_id: 0x1a63
-  ext_pan_id: [0xDD, 0xAA, 0xDD, 0xAA, 0xDD, 0xAA, 0xDD, 0xAA]
+  pan_id: 6755
+  ext_pan_id:
+    - 221
+    - 170
+    - 221
+    - 170
+    - 221
+    - 170
+    - 221
+    - 170
   log_level: warning
   log_output:
-  - console
-#  - file
-  homeassistant_legacy_entity_attributes: false
-  homeassistant_legacy_triggers: false
-  legacy_api: false
-  legacy_availability_payload: false
-device_options:
-  legacy: false
-
-availability: false
-
-## Map devices to persistent /data directory
+    - console
+device_options: {}
+availability:
+  enabled: false
 devices: devices.yaml
 groups: groups.yaml
+version: 4
