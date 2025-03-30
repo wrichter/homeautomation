@@ -9,14 +9,16 @@ Given that MicroShift is undergoing rapid development, the notes are already out
 @startuml componentmodel.svg
 
 node rpi as "Raspberry Pi4 8GB" {
-
     interface Router as "HTTP"
+    interface MQTTNodePort as "MQTT NodePort"
+
     package microshift {
 
         package mqtt {
             interface MQTT
             component mosquitto
             MQTT - mosquitto
+            MQTTNodePort -Down-> MQTT
         }
 
         package zigbee2mqtt {
@@ -44,6 +46,14 @@ node rpi as "Raspberry Pi4 8GB" {
             HTTP_Homeassistant - homeassistant_comp
             database Homeassistant_PVC as "Homeassistant" <<PVC>>
             homeassistant_comp -- Homeassistant_PVC
+
+            interface HTTP_Signal as "HTTP"
+            component signal_api_comp as "Signal API" 
+            HTTP_Signal - signal_api_comp
+            database signal_api_PVC as "Signal" <<PVC>>
+            signal_api_comp -- signal_api_PVC
+
+            homeassistant_comp -> HTTP_Signal
         }
         homeassistant_comp -down-> MQTT
 
@@ -83,10 +93,21 @@ node rpi as "Raspberry Pi4 8GB" {
             database nodered_PVC as "node-red" <<PVC>>
             nodered_comp -- nodered_PVC
         }
+
+
+        package ns_esphome as "ESPHome" {
+            interface HTTP_esphome as "HTTP"
+            component esphome_comp as "ESPHome"
+            HTTP_esphome - esphome_comp
+            database esphome_PVC as "esphome" <<PVC>>
+            esphome_comp -- esphome_PVC
+        }
+
         MQTT <-down- nodered_comp
         HTTP_Homeassistant <-down- nodered_comp
         HTTP_Pushserver <-down- nodered_comp
         HTTP_Volkszaehler <-down- nodered_comp
+
     }
     Router - microshift 
     Router ..> HTTP_Volkszaehler : http://volkszaehler.local
@@ -96,6 +117,8 @@ node rpi as "Raspberry Pi4 8GB" {
     Router ..> HTTP_Zigbee2MQTT : http://zigbee2mqtt.local
     Router ..> HTTP_VZLogger : http://vzlogger.local
     Router ..> HTTP_nodered : http://node-red.local
+    Router ..> HTTP_esphome : http://esphome.local
+
 
 
     component meterserialinterface_comp as "USB IR RW-Head" <<USB Device>>
@@ -121,6 +144,11 @@ node rpi as "Raspberry Pi4 8GB" {
     'ha_integration_description -- homebridge_comp
 }
 
+
+cloud signal_messenger as "Signal Messenger"
+component wallbox1 as "Wallbox Charger" <<Wallbox>>
+
+
 cloud home_network as "Home LAN"
 home_network -- Router
 
@@ -145,6 +173,11 @@ apple_homekit -- ha_integration_description
 
 collections ha_integrations as "Smart Home Integrations"
 ha_integrations -- ha_integration_description
+
+signal_api_comp -up- signal_messenger
+
+wallbox1 -down-> MQTTNodePort
+
 
 'agent zigbee_bridge as "Zigbee Bridge"
 'zigbee_bridge -- ha_integration_description
