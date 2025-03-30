@@ -55,21 +55,19 @@ mqtt:
     unit_of_measurement: Wh
     device_class: energy
   - name: "Erzeugung 1.8.0"
-    state_topic: "vzlogger/data/chn2/agg"
+    state_topic: "vzlogger/data/chn3/agg"
     state_class: total_increasing
     unit_of_measurement: Wh
     device_class: energy
-#  - name: "Gas Impulse" # configured below
-#    state_topic: "vzlogger/data/chn3/agg"
-#    state_class: total
+
   - name: "Warmwasser Speicher Rücklauf"
-    state_topic: "vzlogger/data/chn4/raw"
+    state_topic: "vzlogger/data/chn6/raw"
     state_class: "measurement"
     unit_of_measurement: "°C"
     icon: "mdi:water-percent"
     device_class: "temperature"
   - name: "Warmwasser Speicher Vorlauf"
-    state_topic: "vzlogger/data/chn5/raw"
+    state_topic: "vzlogger/data/chn7/raw"
     state_class: "measurement"
     unit_of_measurement: "°C"
     icon: "mdi:water-percent"
@@ -92,7 +90,7 @@ automation gaszaehler:
   description: ""
   trigger:
     - platform: mqtt
-      topic: vzlogger/data/chn3/agg
+      topic: vzlogger/data/chn5/agg
   condition: []
   action:
     - service: counter.set_value
