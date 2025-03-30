@@ -10,6 +10,7 @@ mqtt:
 # Zigbee Adapter path
 serial:
   port: /dev/ttyACM0
+  adapter: zstack
 # Enable the Zigbee2MQTT frontend
 frontend:
   port: 8080
@@ -19,10 +20,16 @@ advanced:
   network_key: '!secret network_key'
   pan_id: 0x1a63
   ext_pan_id: [0xDD, 0xAA, 0xDD, 0xAA, 0xDD, 0xAA, 0xDD, 0xAA]
-  log_level: warn
+  log_level: warning
   log_output:
   - console
 #  - file
+  homeassistant_legacy_entity_attributes: false
+  homeassistant_legacy_triggers: false
+  legacy_api: false
+  legacy_availability_payload: false
+device_options:
+  legacy: false
 
 availability: false
 
