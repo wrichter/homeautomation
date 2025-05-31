@@ -1,0 +1,97 @@
+#Wohnzimmer
+
+substitutions:
+  device_name: octopus-wohnzimmer
+  upper_device_name: Octopus Wohnzimmer
+
+esphome:
+  name: $device_name
+
+esp8266:
+  board: huzzah
+
+# Enable logging
+logger:
+#  level: VERBOSE
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  password: !secret ota_password
+  platform: esphome
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${upper_device_name} Fallback
+    password: !secret fallback_hotspot_password
+
+captive_portal:
+
+i2c:
+
+bme680_bsec:
+
+sensor:
+  - platform: scd30
+    co2:
+      name: "${upper_device_name} carbon dioxide"
+      device_class: carbon_dioxide
+      accuracy_decimals: 1
+      filters:
+        - sliding_window_moving_average: 
+            window_size: 3
+            send_every: 2
+    temperature:
+      name: "${upper_device_name} Temperature"
+      accuracy_decimals: 1
+      filters:
+        - sliding_window_moving_average: 
+            window_size: 3
+            send_every: 2
+    humidity:
+      name: "${upper_device_name} Humidity"
+      accuracy_decimals: 1
+      filters:
+        - sliding_window_moving_average: 
+            window_size: 3
+            send_every: 2
+    address: 0x61
+    update_interval: 15s
+    #negative temperature offsets cause bogus values to be sent: https://github.com/esphome/issues/issues/3063
+    temperature_offset: 1.3
+    altitude_compensation: 476m
+    automatic_self_calibration: false
+  - platform: bme680_bsec
+    pressure:
+      name: "${upper_device_name} Pressure"
+      filters:
+        - offset: 57 #476m über NN, 12hPa/100m
+        - sliding_window_moving_average: 
+            window_size: 15
+            send_every: 10
+    iaq:
+      name: "${upper_device_name} IAQ"
+      filters:
+        - sliding_window_moving_average: 
+            window_size: 15
+            send_every: 10
+    breath_voc_equivalent:
+      name: "${upper_device_name} Breath VOC Equivalent"
+      filters:
+        - sliding_window_moving_average: 
+            window_size: 15
+            send_every: 10
+
+
+text_sensor:
+  - platform: bme680_bsec
+    iaq_accuracy:
+      name: "${upper_device_name} IAQ Accuracy"

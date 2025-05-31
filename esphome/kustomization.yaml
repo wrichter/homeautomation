@@ -6,9 +6,13 @@ resources:
 - esphome.pvc.yaml
 - esphome.service.yaml
 - esphome.route.yaml
+- esphome.serviceaccount.yaml
+- scc-hostnetwork.yaml
+- hostnetwork.rolebinding.yaml
 
 
 images:
 - name: esphome
   newName: ghcr.io/esphome/esphome
+  newTag: stable
 

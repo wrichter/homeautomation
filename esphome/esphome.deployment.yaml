@@ -20,11 +20,14 @@ spec:
       labels:
         app: esphome
     spec:
+      serviceAccount: esphome
       containers:
       - image: esphome
         imagePullPolicy: IfNotPresent
         name: esphome
-        env: []
+        env:
+        - name: HOME
+          value: /config
         ports:
         - containerPort: 6052
           name: esphome-ui
