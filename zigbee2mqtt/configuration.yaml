@@ -4,7 +4,7 @@ mqtt:
   base_topic: zigbee2mqtt
   server: mqtt://mosquitto.mqtt
 serial:
-  port: /dev/ttyACM0
+  port: /dev/ttyUSB0
   adapter: zstack
 frontend:
   enabled: true

@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: mqtt
+spec:
+  host: mqtt.local
+  path: /mqtt
+  port:
+    targetPort: ws
+  to:
+    kind: Service
+    name: mosquitto
+    weight: 100
+  wildcardPolicy: None

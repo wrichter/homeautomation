@@ -17,6 +17,7 @@ spec:
       labels:
         app: zigbee2mqtt
     spec:
+      #serviceAccount: zigbee2mqtt
       containers:
         - name: zigbee2mqtt
           image: zigbee2mqtt
@@ -28,8 +29,8 @@ spec:
               value: "/data"
             # - name: DEBUG
             #   value: zigbee-herdsman*
-          securityContext:
-            privileged: true
+          # securityContext:
+          #   privileged: true
           ports:
             - name: http
               containerPort: 8080
@@ -43,10 +44,10 @@ spec:
             - name: zigbee-network-key
               mountPath: /data/secret.yaml
               subPath: secret.yaml
-            - name: host-udev
-              mountPath: /run/udev
-            - name: ttyacm
-              mountPath: /dev/ttyACM0
+            # - name: host-udev
+            #   mountPath: /run/udev
+            # - name: ttyacm
+            #   mountPath: /dev/ttyACM0
           livenessProbe:
             tcpSocket:
               port: 8080
@@ -68,16 +69,19 @@ spec:
             failureThreshold: 30
             timeoutSeconds: 1
             periodSeconds: 5
+          resources:
+            limits:
+              squat.ai/serial: 1
       volumes:
         - name: zigbee2mqtt-data
           persistentVolumeClaim:
             claimName: zigbee2mqtt
-        - name: host-udev
-          hostPath:
-            path: /run/udev
-        - name: ttyacm
-          hostPath:
-            path: /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_cc21f1b76399ec11b75b01c944d80d13-if00-port0
+        # - name: host-udev
+        #   hostPath:
+        #     path: /run/udev
+        # - name: ttyacm
+        #   hostPath:
+        #     path: /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_cc21f1b76399ec11b75b01c944d80d13-if00-port0
         - name: zigbee2mqtt-config
           configMap:
             name: zigbee2mqtt

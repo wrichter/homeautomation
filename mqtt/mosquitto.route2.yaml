@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: mqtt-familie-richter
+spec:
+  host: mqtt.familie-richter.net
+  path: /mqtt
+  port:
+    targetPort: ws
+  to:
+    kind: Service
+    name: mosquitto
+    weight: 100
+  wildcardPolicy: None

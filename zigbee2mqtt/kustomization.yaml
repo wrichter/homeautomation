@@ -8,6 +8,9 @@ resources:
 - zigbee2mqtt.route.yaml
 - zigbee2mqtt.service.yaml
 - zigbee2mqtt.pvc.yaml
+#- zigbee2mqtt.serviceaccount.yaml
+#- hostaccess.rolebinding.yaml
+#- scc-hostmount-anyuid.role.yaml
 
 
 configMapGenerator:

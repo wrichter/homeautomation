@@ -7,11 +7,8 @@ spec:
     - name: mqtt
       port: 1883
       targetPort: 1883
-      nodePort: 30100
-    - name: wss
-      port: 9001
-      targetPort: 9001
-      nodePort: 30101
+    - name: ws
+      port: 8080
+      targetPort: 8080
   selector:
     app: mosquitto
-  type: NodePort # NodePort to allow "hostNetwork: true" containers to access the service
